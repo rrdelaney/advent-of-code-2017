@@ -1,0 +1,12 @@
+(jbuild_version 1)
+
+(executable (
+  (name one_test)
+  (modules (one one_test))
+))
+
+(alias (
+  (name one/runtest)
+  (deps (one_test.exe))
+  (action (run ${<}))
+))
