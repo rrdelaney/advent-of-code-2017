@@ -10,3 +10,9 @@
   (deps (one_test.exe))
   (action (run ${<}))
 ))
+
+(alias (
+  (name runtest)
+  (deps (one_test.exe))
+  (action (run ${<}))
+))
