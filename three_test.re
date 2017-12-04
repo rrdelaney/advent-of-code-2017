@@ -21,5 +21,3 @@ let actual = Three.manhattan_distance(1024);
 let expected = 31;
 
 assert (expected == actual);
-
-print_int(Three.manhattan_distance(277678));
