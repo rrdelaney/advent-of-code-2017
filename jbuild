@@ -11,10 +11,23 @@
   (action (run ${<}))
 ))
 
+(alias (
+  (name runtest)
+  (deps (one_test.exe))
+  (action (run ${<}))
+))
+
 (executable (
   (name two_test)
   (modules (two two_test))
 ))
+
+(alias (
+  (name runtest)
+  (deps (two_test.exe))
+  (action (run ${<}))
+))
+
 
 (alias (
   (name two/runtest)
