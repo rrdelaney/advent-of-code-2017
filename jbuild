@@ -28,9 +28,25 @@
   (action (run ${<}))
 ))
 
-
 (alias (
   (name two/runtest)
   (deps (two_test.exe))
+  (action (run ${<}))
+))
+
+(executable (
+  (name three_test)
+  (modules (three three_test))
+))
+
+(alias (
+  (name runtest)
+  (deps (three_test.exe))
+  (action (run ${<}))
+))
+
+(alias (
+  (name three/runtest)
+  (deps (three_test.exe))
   (action (run ${<}))
 ))
