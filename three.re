@@ -1,61 +1,108 @@
-let rec closest_square = (~base=1, num) =>
-  if (base * base >= num) {
-    base
-  } else {
-    closest_square(~base=base + 2, num)
+type action =
+  | Up
+  | Down
+  | Left
+  | Right
+  | Done;
+
+let rec mk_steps = (steps, action) =>
+  switch steps {
+  | 0 => []
+  | _ => [action, ...mk_steps(steps - 1, action)]
   };
 
 type position = {
-  size: int,
   x: int,
   y: int,
-  value: int
+  value: int,
+  inc: int
 };
 
-let show_position = ({size, x, y, value}) =>
-  print_endline(
-    "("
-    ++ string_of_int(x)
-    ++ ", "
-    ++ string_of_int(y)
-    ++ ") ==> "
-    ++ string_of_int(value)
-  );
+let is_odd_square = (num) =>
+  (num == 1 || num mod 2 == 1) && mod_float(sqrt(float_of_int(num)), 1.) == 0.;
 
-let rec wind_down = (position, want) => {
-  let {value, size, x, y} = position;
-  if (size == 1) {
-    {value: 1, size: 1, x: 0, y: 0}
-  } else if (value == want) {
+let sqrt_int = (num) => num |> float_of_int |> sqrt |> int_of_float;
+
+let rec spiral_out = (~position, ~action_queue=[], ~increment, value) => {
+  let next_action_queue =
+    if (position.value >= value) {
+      [Done]
+    } else if (is_odd_square(position.inc)) {
+      let side_len = sqrt_int(position.inc);
+      List.concat([
+        action_queue,
+        [Right],
+        mk_steps(side_len, Up),
+        mk_steps(side_len + 1, Left),
+        mk_steps(side_len + 1, Down),
+        mk_steps(side_len + 1, Right)
+      ])
+    } else {
+      action_queue
+    };
+  let action = List.hd(next_action_queue);
+  let next_action_queue = List.tl(next_action_queue);
+  let next_position =
+    switch action {
+    | Done => position
+    | Up => {...position, y: position.y + 1}
+    | Down => {...position, y: position.y - 1}
+    | Left => {...position, x: position.x - 1}
+    | Right => {...position, x: position.x + 1}
+    };
+  if (action == Done) {
     position
   } else {
-    /* show_position(position); */
-    let next_position =
-      switch (x, y) {
-      | (x, y) when x == size - 1 && y == size - 1 => raise(Not_found)
-      | (x, y) when x == size - 1 => {...position, y: y + 1}
-      | (x, 0) => {...position, x: x + 1}
-      | (0, y) => {...position, y: y - 1}
-      | (x, y) when y == size - 1 => {...position, x: x - 1}
-      | _ => raise(Not_found)
-      };
-    wind_down({...next_position, value: value - 1}, want)
+    spiral_out(
+      ~position={
+        ...next_position,
+        inc: next_position.inc + 1,
+        value: increment(next_position)
+      },
+      ~action_queue=next_action_queue,
+      ~increment,
+      value
+    )
   }
 };
 
-let steps_from_position = ({size, x, y}) => {
-  let mid = (size - 1) / 2;
-  abs(mid - x) + abs(mid - y)
+let manhattan_distance = (value) => {
+  let initial_position = {x: 0, y: 0, value: 1, inc: 1};
+  let increment = (position) => position.value + 1;
+  let value_position =
+    spiral_out(~position=initial_position, ~increment, value);
+  abs(value_position.x) + abs(value_position.y)
 };
 
-let manhattan_distance = (value) => {
-  let size = closest_square(value);
-  let inital_position = {
-    x: size - 2,
-    y: size - 1,
-    value: size * size - 1,
-    size
+let manhattan_distance2 = (value) => {
+  let initial_position = {x: 0, y: 0, value: 1, inc: 1};
+  let past_values = ref([((0, 0), 1)]);
+  let increment = (position) => {
+    let {x, y} = position;
+    let get_value = ((nx, ny)) =>
+      try (List.assoc((nx, ny), past_values^)) {
+      | Not_found => 0
+      };
+    let surrounding_points = [
+      (x + 1, y),
+      (x + 1, y + 1),
+      (x, y + 1),
+      (x - 1, y + 1),
+      (x - 1, y),
+      (x - 1, y - 1),
+      (x, y - 1),
+      (x + 1, y - 1)
+    ];
+    let next_value =
+      List.fold_left(
+        (value, point) => value + get_value(point),
+        0,
+        surrounding_points
+      );
+    past_values := [((x, y), next_value), ...past_values^];
+    next_value
   };
-  let value_position = wind_down(inital_position, value);
-  steps_from_position(value_position)
+  let value_position =
+    spiral_out(~position=initial_position, ~increment, value);
+  value_position.value
 };

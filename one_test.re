@@ -22,32 +22,32 @@ let expected = 9;
 
 assert (expected == actual);
 
-let expected = One.captacha2("1212");
+let actual = One.captacha2("1212");
 
-let actual = 6;
-
-assert (expected == actual);
-
-let expected = One.captacha2("1221");
-
-let actual = 0;
+let expected = 6;
 
 assert (expected == actual);
 
-let expected = One.captacha2("123425");
+let actual = One.captacha2("1221");
 
-let actual = 4;
-
-assert (expected == actual);
-
-let expected = One.captacha2("123123");
-
-let actual = 12;
+let expected = 0;
 
 assert (expected == actual);
 
-let expected = One.captacha2("12131415");
+let actual = One.captacha2("123425");
 
-let actual = 4;
+let expected = 4;
+
+assert (expected == actual);
+
+let actual = One.captacha2("123123");
+
+let expected = 12;
+
+assert (expected == actual);
+
+let actual = One.captacha2("12131415");
+
+let expected = 4;
 
 assert (expected == actual);
