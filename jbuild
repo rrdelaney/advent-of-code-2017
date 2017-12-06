@@ -50,3 +50,20 @@
   (deps (three_test.exe))
   (action (run ${<}))
 ))
+
+(executable (
+  (name four_test)
+  (modules (four four_test))
+))
+
+(alias (
+  (name runtest)
+  (deps (four_test.exe))
+  (action (run ${<}))
+))
+
+(alias (
+  (name four/runtest)
+  (deps (four_test.exe))
+  (action (run ${<}))
+))
