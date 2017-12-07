@@ -67,3 +67,20 @@
   (deps (four_test.exe))
   (action (run ${<}))
 ))
+
+(executable (
+  (name five_test)
+  (modules (five five_test))
+))
+
+(alias (
+  (name runtest)
+  (deps (five_test.exe))
+  (action (run ${<}))
+))
+
+(alias (
+  (name five/runtest)
+  (deps (five_test.exe))
+  (action (run ${<}))
+))
