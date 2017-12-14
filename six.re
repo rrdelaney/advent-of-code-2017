@@ -1,5 +1,7 @@
 module StringSet = Set.Make(String);
 
+module StringMap = Map.Make(String);
+
 let create_bank = (input) =>
   String.split_on_char(' ', input) |> List.map(int_of_string) |> Array.of_list;
 
@@ -39,4 +41,17 @@ let steps_to_loop = (input) => {
     distribute(bank)
   };
   steps^
+};
+
+let steps_to_loop2 = (input) => {
+  let steps = ref(0);
+  let previous = ref(StringMap.empty);
+  let bank = create_bank(input);
+  while (! StringMap.mem(hash_bank(bank), previous^)) {
+    previous := StringMap.add(hash_bank(bank), steps^, previous^);
+    steps := steps^ + 1;
+    distribute(bank)
+  };
+  let last_seen = StringMap.find(hash_bank(bank), previous^);
+  steps^ - last_seen
 };
