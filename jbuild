@@ -101,3 +101,20 @@
   (deps (six_test.exe))
   (action (run ${<}))
 ))
+
+(executable (
+  (name seven_test)
+  (modules (seven seven_test))
+))
+
+(alias (
+  (name runtest)
+  (deps (seven_test.exe))
+  (action (run ${<}))
+))
+
+(alias (
+  (name seven/runtest)
+  (deps (seven_test.exe))
+  (action (run ${<}))
+))
